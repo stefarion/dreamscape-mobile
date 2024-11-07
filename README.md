@@ -1,9 +1,10 @@
-# <img src="https://github.com/stefarion/dreamscape-mobile/blob/main/img/Item_Dreamscape_Pass.png" width="40" height="40" /> Dreamscape Corner
+# <img src="https://github.com/stefarion/dreamscape-mobile/blob/main/img/Item_Dreamscape_Pass.png" width="40" height="40" /> Dreamscape Mobile
 Dreamscape Mobile merupakan versi *mobile* Dreamscape Corner, yaitu E-Commerce yang menyediakan produk *merchandise* dari Honkai: Star Rail. E-Commerce ini terinspirasi dari Honkai Shop yang juga menjual *merchandise game* yang sama. Nama "Dreamscape Corner" di ambil dari nama toko di dalam *game* bernama "Dreamscape Sales Store" yang terletak di Penacony.
 <br>
 <br>
 Daftar Tugas Individu yang telah dikerjakan dapat dilihat di bawah ini.
 + [Tugas 7 Individu](https://github.com/stefarion/dreamscape-mobile?tab=readme-ov-file#tugas-individu-7)
++ [Tugas 8 Individu](https://github.com/stefarion/dreamscape-mobile?tab=readme-ov-file#tugas-individu-8)
 <br>
 
 Dibuat oleh,<br>
@@ -14,6 +15,17 @@ Dibuat oleh,<br>
 <br>
 
 # Tugas
+## Tugas Individu 8
+### a. Kegunaan dan Keuntungan `const`
+
+### b. Penggunaan *Row* dan *Column*
+
+### c. Elemen *input* pada *form* proyek ini
+
+### d. Pengaturan *theme* pada proyek ini
+
+### e. Penanganan navigasi pada proyek ini
+
 ## Tugas Individu 7
 ### a. *Stateless Widget*, *Stateful Widget*, dan Perbedaannya
 ***Stateless widget*** adalah *widget* yang tidak dapat berubah setelah dibuat. Ia akan *override method* `build()` dan mengembalikan sebuah *widget*. Sementara itu, ***stateful widget*** adalah *widget* yang dapat berubah saat *run-time*, yaitu ketika *user* melakukan suatu aksi terhadap dirinya. *Widget* ini akan *override method* `createState()` dan mengembalikan sebuah *state*.<br>
