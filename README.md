@@ -17,14 +17,317 @@ Dibuat oleh,<br>
 # Tugas
 ## Tugas Individu 8
 ### a. Kegunaan dan Keuntungan `const`
+Inisialiasi `const` digunakan untuk membuat objek bersifat *compile-time constant*, artinya objek tersebut ditentukan saat *compile-time* dan tidak mengalami perubahan selama *run-time*. Kegunaan lainnya ialah menghemat memori. Hal ini dikarenakan objek `const` hanya dibuat sekali saat kompilasi, sehingga terjadi optimasi dan objek dapat digunakan kembali di seluruh aplikasi. Keuntungan penggunaan `const` adalah dapat meningkatkan performa aplikasi dan penggunaan memori yang lebih efisien karena dapat menghindari pembuatan *widget* yang berulang.
+
+`const` sebaiknya digunakan pada *stateless widget* dan nilai tetap yang sudah diketahui waktu kompilasi, seperti warna, margin, *padding*, dan teks statis. Seperti kebalikannya, `const` tidak digunakan pada *stateful widgets* dan nilai dinamis yang dapat berubah saat *run-time*. Contoh penggunaan `const` adalah pada `MyApp` karena berupa *stateless widget*.
+```
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+···
+```
 
 ### b. Penggunaan *Row* dan *Column*
+*Row* dan *Column* adalah *widget layout* dasar pada Flutter. *Row* digunakan untuk menyusun *widget* secara horizontal, `mainAxisAlignment` untuk mengatur distribusi *widget* secara horizontal, dan `crossAxisAlignment` untuk mensejajarkan *widget* sepanjang sumbu silang (vertikal). Sementara pada *Column*, *widget* disusun secara vertikal, `mainAxisAlignment` untuk mengatur distribusi *widget* secara vertikal, dan `crossAxisAlignment` untuk mensejajarkan *widget* secara horizontal. <br>
+
+Contoh implementasi *Row* dalam proyek ini terletak pada `AppBar` untuk menyetarakan ikon *drawer*, gambar logo dan judul aplikasi secara horizontal.
+```
+appBar: AppBar(
+  title: Row(
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.asset(
+          'img/Item_Dreamscape_Pass.png',
+          height: 40, // Set the size of your logo
+          width: 40,
+        ),
+      ),
+      const SizedBox(width: 8),
+      const Text(
+        'Dreamscape Mobile',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  ),
+  iconTheme: const IconThemeData(color: Colors.white),
+  backgroundColor: Theme.of(context).colorScheme.primary,
+),
+```
+Contoh implementasi *Column* dalam proyek ini terletak pada `Form` untuk menyetarakan *field*-*field input* secara vertikal.
+```
+body: Form(
+  key: _formKey,
+  child: SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Diisi dengan berbagai field input
+···
+```
 
 ### c. Elemen *input* pada *form* proyek ini
+Elemen *input* yang digunakan pada *form* proyek ini hanya `TextFormField` yang berfungsi untuk menerima *input* teks dari *user*. *Input* dalam `TextFormField` bisa divalidasi dengan *validator* dan dapat didekorasi, baik model *input* dan bordernya. Beberapa elemen *input* Flutter lain yang belum digunakan pada proyek ini, antara lain `Checkbox`, `Radio`, `Switch`, `Slider`, `DatePicker`, dan  `TimePicker`.<br>
+
+`Checkbox` untuk menerima *input boolean*. `Radio` untuk menerima *input* pilihan tunggal dari opsi-opsi. `Switch` menerima *input boolean* dalam bentuk saklar. `Slider` menerima *input* angka dalam bentuk *slider*. `DatePicker` menerima *input* tanggal. `TimePicker` menerima *input* waktu.
 
 ### d. Pengaturan *theme* pada proyek ini
+Pengaturan *theme* pada proyek ini terletak di `main.dart` dalam `MaterialApp`. `MaterialApp` sendiri berfungsi sebagai pengaturan dasar dan penyedia struktur proyek Flutter, termasuk *theme* di dalamnya. Dengan demikian, *widget* lain dalam aplikasi akan mengikuti *theme* yang telah ditentukan, sehingga tampilan aplikasi konsisten. Dalam `MaterialApp`, `ThemeData` digunakan untuk mengatur aspek-aspek tema, contohnya warna. Lalu, `ColorScheme` digunakan untuk mengatur skema warna yang lebih terstruktur dan konsisten.
+```
+···
+return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Dreamscape Mobile',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: MaterialColor(
+···
+```
+Cara mengimplementasikan *theme* warna tersebut pada *widget* lain bisa dengan *command*
+```
+color: Theme.of(context).colorScheme.primary,
+```
 
 ### e. Penanganan navigasi pada proyek ini
+Dalam menangani navigasi dalam proses perpindahan halaman aplikasi, proyek ini memanfaatkan *widget* bawaan Flutter, yaitu `Navigator`. *Widget* ini bekerja layaknya sebuah *stack*. Setiap kali *user* ingin berpindah ke halaman baru, halaman tersebut akan ditambahkan ke *stack* (*push*), dan saat kembali, halaman tersebut dihapus dari *stack* (*pop*). `Navigator` bisa digunakan dalam pembuatan tampilan *Navigation Bar*, seperti *Sidebar* pada proyek ini. Terdapat tiga fungsi `Navigator` yang telah digunakan pada proyek ini, yaitu
+1. `Navigator.push` untuk menambahkan *route* baru ke *stack* navigasi.
+    ```
+    if (item.name == "Tambah Produk") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductEntryFormPage(),
+        ),
+      );
+    }
+    ```
+2. `Navigator.pop` untuk menghapus *route* teratas dari *stack* navigasi.
+    ```
+    actions: [
+      TextButton(
+        child: const Text('OK'),
+        onPressed: () {
+          Navigator.pop(context);
+          _formKey.currentState!.reset();
+        },
+      ),
+    ],
+    ```
+3. `Navigator.pushReplacement` untuk menganti *route* teratas dengan *route* baru.
+    ```
+    onTap: () {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(),
+          ));
+    },
+    ```
+
+### f. Proses Implementasi *Form*, *Input*, *Layout*, dan Navigasi
+1. Buat *file* `productentry_form.dart` dan definisikan *class* `_ProductEntryFormPageState` untuk menyimpan *state* dari *form* yang akan dibuat.
+2. Buat variabel untuk menyimpan *input* dari masing-masing *field*.
+    ```
+    class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
+      final _formKey = GlobalKey<FormState>();
+      String _name = "";
+      String _category = "";
+      int _amount = 0;
+      int _price = 0;
+      String _description = "";
+    ···
+    ```
+3. Buat `Form` dan gunakan *widget* `Column` untuk menyetarakan semua *field* secara vertikal.
+    ```
+    ···
+    body: Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+    ···
+    ```
+4. Pakai `TextFormField` yang di-*wrap* oleh `Padding` sebagai tempat pengisian *input* untuk masing-masing *field*.
+    ```
+    ···
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: "Enter your product's name",
+          labelText: "Product Name",
+          hintStyle: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'Tahoma'),
+          labelStyle: TextStyle(color: Colors.white, fontFamily: 'Tahoma'),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+    ···
+    ```
+5. Validasi isi *input*. Untuk tipe `String` contohnya,
+    ```
+    ···
+    onChanged: (String? value) {
+      setState(() {
+        _name = value!;
+      });
+    },
+    validator: (String? value) {
+      if (value == null || value.isEmpty) {
+        return "Product's name can't be empty!";
+      }
+      if (value.length < 3 || value.length > 255) {
+        return "Product's name must be between 3 and 255 characters!";
+      }
+      if (RegExp(r'[<>()\[\]]').hasMatch(value)) {
+        return "Product's name can't contain symbols!";
+      }
+      return null;
+    },
+    ···
+    ```
+    Untuk tipe `int` contohnya,
+    ```
+    ···
+    onChanged: (String? value) {
+      setState(() {
+        _amount = int.tryParse(value!) ?? 0;
+      });
+    },
+    validator: (String? value) {
+      if (value == null || value.isEmpty) {
+        return "Amount can't be empty!";
+      }
+      if (int.tryParse(value) == null) {
+        return "Amount must be numbers!";
+      }
+      if (int.tryParse(value)! < 0) {
+        return "Amount can't be negative!";
+      }
+      return null;
+    },
+    ···
+    ```
+6. Buat tombol `Save` yang dapat memunculkan *pop-up* berupa data yang di-*input* pada *form*.
+    ```
+    ···
+    Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(
+                Theme.of(context).colorScheme.primary),
+          ),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Product added successfully!'),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Product Name: $_name'),
+                          Text('Category: $_category'),
+                          Text('Amount: $_amount'),
+                          Text('Price: Rp $_price'),
+                          Text('Description: $_description'),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _formKey.currentState!.reset();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+          child: const Text(
+            "Add Product",
+            style: TextStyle(color: Colors.white, fontFamily: 'Tahoma', fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    ),
+    ···
+    ```
+7. Atur navigasi pada `product_card.dart` di mana saat *user* klik tombol `Tambah Produk`, *user* diarahkan ke *form page* untuk menambah produk.
+    ```
+    ···
+    onTap: () {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!"))
+        );
+        if (item.name == "Tambah Produk") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductEntryFormPage(),
+            ),
+          );
+        }
+    ···
+    ```
+8. Buat *file* `left_drawer.dart` dalam *folder* `widgets` sebagai *sidebar* navigasi ke berbagai halaman di aplikasi dengan menggunakan *widget* `Drawer`. Isinya berupa `DrawerHeader` dan `ListTile` yang akan digunakan untuk *redirection* ke halaman lain pada aplikasi.
+9. Buat `ListTile` bernama `Home Page` yang akan mengarahkan *user* ke halaman utama aplikasi.
+    ```
+    ···
+    ListTile(
+      leading: const Icon(Icons.home_outlined, color: Colors.white),
+      title: const Text(
+        'Home Page', 
+        style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
+      ),
+      // Bagian redirection ke MyHomePage
+      onTap: () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyHomePage(),
+            ));
+      },
+    ),
+    ···
+    ```
+10. Buat `ListTile` bernama `Add Product` yang akan mengarahkan *user* ke *form page* tambah produk.
+    ```
+    ···
+    ListTile(
+      leading: const Icon(Icons.shopping_cart_sharp, color: Colors.white),
+      title: const Text(
+        'Add Product', 
+        style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
+      ),
+      // Bagian redirection ke MoodEntryFormPage
+      onTap: () {
+        /*
+        Routing ke MoodEntryFormPage
+        */
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductEntryFormPage(),
+            ));
+      },
+    ),
+    ···
+    ```
 
 ## Tugas Individu 7
 ### a. *Stateless Widget*, *Stateful Widget*, dan Perbedaannya

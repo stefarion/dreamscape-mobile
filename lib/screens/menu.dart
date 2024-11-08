@@ -21,7 +21,6 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
-        // The drawer icon will appear on the left by default
         title: Row(
           children: [
             Padding(

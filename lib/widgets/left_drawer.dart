@@ -40,40 +40,40 @@ class LeftDrawer extends StatelessWidget {
               ],
             ),
           ),
-            // Bagian routing
-            ListTile(
-              leading: const Icon(Icons.home_outlined, color: Colors.white),
-              title: const Text(
-                'Home Page', 
-                style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
-              ),
-              // Bagian redirection ke MyHomePage
-              onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyHomePage(),
-                    ));
-              },
+          // Bagian routing
+          ListTile(
+            leading: const Icon(Icons.home_outlined, color: Colors.white),
+            title: const Text(
+              'Home Page', 
+              style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
             ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart_sharp, color: Colors.white),
-              title: const Text(
-                'Add Product', 
-                style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
-              ),
-              // Bagian redirection ke MoodEntryFormPage
-              onTap: () {
-                /*
-                Routing ke MoodEntryFormPage
-                */
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductEntryFormPage(),
-                    ));
-              },
+            // Bagian redirection ke MyHomePage
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_cart_sharp, color: Colors.white),
+            title: const Text(
+              'Add Product', 
+              style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
             ),
+            // Bagian redirection ke MoodEntryFormPage
+            onTap: () {
+              /*
+              Routing ke MoodEntryFormPage
+              */
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductEntryFormPage(),
+                  ));
+            },
+          ),
         ],
       ),
     );
