@@ -4,12 +4,9 @@ import 'package:dreamscape_mobile/widgets/product_card.dart';
 import 'package:dreamscape_mobile/screens/productentry_form.dart';
 
 class MyHomePage extends StatelessWidget {
-  final String npm = '2306152456'; // NPM
-  final String name = 'Stefanus Tan Jaya'; // Nama
-
   final List<ItemHomepage> items = [
-      ItemHomepage("Lihat Daftar Produk", Icons.store_mall_directory_outlined, Color(0xFF3A7BD5)),
-      ItemHomepage("Tambah Produk", Icons.add_circle_outline, Color(0xFF4CAF50)),
+      ItemHomepage("Product List", Icons.store_mall_directory_outlined, Color(0xFF3A7BD5)),
+      ItemHomepage("Add Product", Icons.add_circle_outline, Color(0xFF4CAF50)),
       ItemHomepage("Logout", Icons.logout, Color(0xFFF44336)),
   ];
 
@@ -54,15 +51,6 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Row untuk menampilkan 2 InfoCard secara horizontal.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: name),
-              ],
-            ),
-
             // Memberikan jarak vertikal 16 unit.
             const SizedBox(height: 16.0),
 
@@ -131,37 +119,6 @@ class MyHomePage extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan title dan content.
-  final String title;  // Judul kartu.
-  final String content;  // Isi kartu.
-
-  const InfoCard({super.key, required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      // Membuat kotak kartu dengan bayangan dibawahnya.
-      elevation: 2.0,
-      child: Container(
-        // Mengatur ukuran dan jarak di dalam kartu.
-        padding: const EdgeInsets.all(16.0),
-        // Menyusun title dan content secara vertikal.
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text(content),
           ],
         ),
       ),

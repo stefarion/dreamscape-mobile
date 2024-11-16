@@ -1,3 +1,4 @@
+import 'package:dreamscape_mobile/screens/list_products.dart';
 import 'package:flutter/material.dart';
 import 'package:dreamscape_mobile/screens/menu.dart';
 import 'package:dreamscape_mobile/screens/productentry_form.dart';
@@ -57,21 +58,32 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_cart_sharp, color: Colors.white),
+            leading: const Icon(Icons.add_shopping_cart_rounded, color: Colors.white),
             title: const Text(
               'Add Product', 
               style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
             ),
             // Bagian redirection ke MoodEntryFormPage
             onTap: () {
-              /*
-              Routing ke MoodEntryFormPage
-              */
               Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ProductEntryFormPage(),
                   ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_cart_rounded, color: Colors.white),
+            title: const Text(
+              'Product List', 
+              style: TextStyle(color: Colors.white, fontFamily: 'Tahoma')
+            ),
+            onTap: () {
+                // Route menu ke halaman list produk
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProductEntryPage()),
+                );
             },
           ),
         ],

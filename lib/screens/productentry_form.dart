@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:dreamscape_mobile/screens/menu.dart';
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class ProductEntryFormPage extends StatefulWidget {
   const ProductEntryFormPage({super.key});
@@ -11,12 +16,12 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
   final _formKey = GlobalKey<FormState>();
 	String _name = "";
 	String _category = "";
-  int _amount = 0;
 	int _price = 0;
   String _description = "";
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
               appBar: AppBar(
                 title: const Center(
@@ -102,38 +107,6 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            hintText: "Enter your product's amount",
-                            labelText: "Amount",
-                            hintStyle: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'Tahoma'),
-                            labelStyle: TextStyle(color: Colors.white, fontFamily: 'Tahoma'),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                          ),
-                          style: TextStyle(color: Colors.white, fontFamily: 'Tahoma'),
-                          onChanged: (String? value) {
-                            setState(() {
-                              _amount = int.tryParse(value!) ?? 0;
-                            });
-                          },
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return "Amount can't be empty!";
-                            }
-                            if (int.tryParse(value) == null) {
-                              return "Amount must be numbers!";
-                            }
-                            if (int.tryParse(value)! < 0) {
-                              return "Amount can't be negative!";
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
                             hintText: "Enter your product's price",
                             labelText: "Price (in Rp)",
                             hintStyle: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'Tahoma'),
@@ -203,37 +176,35 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                               backgroundColor: WidgetStateProperty.all(
                                   Theme.of(context).colorScheme.primary),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Text('Product added successfully!'),
-                                      content: SingleChildScrollView(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Product Name: $_name'),
-                                            Text('Category: $_category'),
-                                            Text('Amount: $_amount'),
-                                            Text('Price: Rp $_price'),
-                                            Text('Description: $_description'),
-                                          ],
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          child: const Text('OK'),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            _formKey.currentState!.reset();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
+                                  final response = await request.postJson(
+                                      "http://127.0.0.1:8000/create-flutter/",
+                                      jsonEncode(<String, String>{
+                                            'name': _name,
+                                            'category': _category,
+                                            'price': _price.toString(),
+                                            'description': _description,
+                                      }),
+                                  );
+                                  if (context.mounted) {
+                                      if (response['status'] == 'success') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                          content: Text("Product has been added!"),
+                                          ));
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => MyHomePage()),
+                                          );
+                                      } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                              content:
+                                                  Text("Something went wrong, please try again."),
+                                          ));
+                                      }
+                                  }
                               }
                             },
                             child: const Text(
