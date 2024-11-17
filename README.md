@@ -5,6 +5,7 @@ Dreamscape Mobile merupakan versi *mobile* Dreamscape Corner, yaitu E-Commerce y
 Daftar Tugas Individu yang telah dikerjakan dapat dilihat di bawah ini.
 + [Tugas 7 Individu](https://github.com/stefarion/dreamscape-mobile?tab=readme-ov-file#tugas-individu-7)
 + [Tugas 8 Individu](https://github.com/stefarion/dreamscape-mobile?tab=readme-ov-file#tugas-individu-8)
++ [Tugas 9 Individu](https://github.com/stefarion/dreamscape-mobile?tab=readme-ov-file#tugas-individu-9)
 <br>
 
 Dibuat oleh,<br>
@@ -15,6 +16,36 @@ Dibuat oleh,<br>
 <br>
 
 # Tugas
+## Tugas Individu 9
+### a. Pentingnya model untuk pengambilan atau pengiriman data JSON?
+Model diperlukan untuk pengambilan atau pengiriman data JSON, yaitu
++ Membuat data lebih mudah dipahami dan diakses karena data JSON dikonversi menjadi objek dengan atribut terstruktur.
++ Memastikan data sesuai dengan format dan tipe yang ditetapkan.
++ Dapat digunakan kembali (*reusability*) untuk berbagai bagian aplikasi lain, sehingga tidak perlu *parsing* JSON di tiap tempat.
+
+Tidak membuat model tidak selalu menyebabkan *error*, namun kekurangannya
++ Kesulitan *maintenance* proyek.
++ Data JSON harus diproses dan dipetakan manual.
++ Data lebih sulit diakses dan rawan kesalahan tipe data.
+
+### b. Fungsi *library* `http`
+Secara umum, *library* `http` digunakan untuk
++ Melakukan HTTP *request*, seperti `GET`, `POST`, `PUT`, `PATCH`, dan `DELETE` ke *server*.
++ Menerima dan memproses data dari API dalam bentuk JSON atau bentuk lain.
++ Mengirim data dalam bentuk JSON atau lainnya ke API (*server*).
++ Mengelola fungsi koneksi jaringan, termasuk *timeout* dan *error* (404, 500, dll).
+
+Dalam proyek ini, `http` digunakan untuk *fetch* data dari *server* Django proyek sebelumnya (Dreamscape Corner) yang berisi informasi produk dalam bentuk JSON. Informasi produk tersebut akan ditampilkan pada halaman `Product List` pada proyek Flutter ini.
+
+### c. Fungsi dan Pentingnya `CookieRequest`
+
+
+### d. Mekanisme pengiriman data dari *input* sampai dapat ditampilkan
+
+### e. Mekanisme autentikasi *login*, *register*, dan *logout*
+
+### f. Proses Implementasi Integrasi antara Django dan Flutter
+
 ## Tugas Individu 8
 ### a. Kegunaan dan Keuntungan `const`
 Inisialiasi `const` digunakan untuk membuat objek bersifat *compile-time constant*, artinya objek tersebut ditentukan saat *compile-time* dan tidak mengalami perubahan selama *run-time*. Kegunaan lainnya ialah menghemat memori. Hal ini dikarenakan objek `const` hanya dibuat sekali saat kompilasi, sehingga terjadi optimasi dan objek dapat digunakan kembali di seluruh aplikasi. Keuntungan penggunaan `const` adalah dapat meningkatkan performa aplikasi dan penggunaan memori yang lebih efisien karena dapat menghindari pembuatan *widget* yang berulang.
