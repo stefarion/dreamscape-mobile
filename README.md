@@ -38,13 +38,312 @@ Secara umum, *library* `http` digunakan untuk
 Dalam proyek ini, `http` digunakan untuk *fetch* data dari *server* Django proyek sebelumnya (Dreamscape Corner) yang berisi informasi produk dalam bentuk JSON. Informasi produk tersebut akan ditampilkan pada halaman `Product List` pada proyek Flutter ini.
 
 ### c. Fungsi dan Pentingnya `CookieRequest`
+`CookieRequest` adalah bagian dari *library* `pbp_django_auth` yang digunakan proyek Flutter untuk terhubung dengan *backend* pada proyek Django. Fungsi utama `CookieRequest` antara lain
++ Mengelola otentikasi berbasis *cookie* (contohnya `csrf_token`) yang menyimpan sesi *login user*.
++ Menyertakan *cookie* ke dalam *header* setiap *request* HTTP untuk memastikan *server* memvalidasi *user*.
++ Menggunakan `POST` dan `GET` untuk mengakses API *backend* Django sambil mengingat sesi *user*.
 
+Alasan *instance* `CookieRequest` perlu dibagikan ke semua komponen antara lain
++ Menjaga konsistensi sesi *user* karena seluruh komponen butuh *instance* atau status *login* yang sama.
++ Kemudahan melakukan *request* HTTP tanpa perlu mengelola *cookie* secara manual.
++ Menghindari duplikasi data, sehingga aplikasi dapat mengelola sesi cukup dari satu sumber data otentikasi dan *cookie*.
 
 ### d. Mekanisme pengiriman data dari *input* sampai dapat ditampilkan
+1. *User* memasukkan data melalui *form* misalnya di *interface* Flutter.
+2. Data yang di-*input* dikirim ke server melalui `http` maupun `CookieRequest` dalam bentuk JSON misalnya.
+3. Server Django menerima data *request*, kemudian memprosesnya, seperti menyimpan ke *database*.
+4. Server Dango mengembalikan respons dalam bentuk JSON.
+5. Flutter menerima respons dari server.
+6. Respons berupa JSON dikonversi menjadi objek Dart dengan menggunakan model.
+7. Objek Dart dapat ditampilkan pada *interface* Flutter.
 
 ### e. Mekanisme autentikasi *login*, *register*, dan *logout*
+### - *Login*
+1. *User* memasukkan *username* dan *password* pada *field interface* Flutter yang tersedia.
+2. Data *request* dikirim ke *endpoint login* Django proyek sebelumnya dengan menggunakan `CookieRequest`.
+3. Django memverifikasi kredensial *user* dan mengembalikan *cookie* autentikasi jika berhasil (*matched*).
+4. Sesi *cookie* disimpan di `CookieRequest` untuk keperluan *request* selanjutnya.
+5. Menu utama aplikasi dapat ditampilkan setelah berhasil *login*.
+### - *Register*
+1. *User* memasukkan informasi akun, seperti *username*, nama lengkap, *email*, dan *password* pada *field interface* Flutter yang tersedia.
+2. Data *request* dikirim ke *endpoint register* Django proyek sebelumnya dengan menggunakan `http` atau `CookieRequest`.
+3. Django menyimpan data pengguna baru ke *database* dan mengembalikan respons.
+4. Flutter menampilkan pesan respons pada *interface* aplikasi.
+### - *Logout*
+1. Flutter mengirim *request* untuk *logout* ke *endpoint logout* Django proyek sebelumnya dengan menggunakan `CookieRequest`.
+2. Django menghapus sesi *user*, kemudian Flutter mengubah status *user* menjadi tidak *login*.
+3. *User* diarahkan kembali ke halaman *login*.
 
 ### f. Proses Implementasi Integrasi antara Django dan Flutter
+1. Untuk memastikan *deployment* proyek Django sebelumya (Dreamscape Corner) berjalan dengan baik, integrasi dalam proyek Flutter ini akan mengarah ke *localhost* `http://127.0.0.1:8000` di mana proyek Django harus diaktifkan terlebih dahulu.
+2. Buat *app* `authentication` baru di proyek Django, *download* `django-cors-headers` untuk proyek Django, dan buat fungsi *login* di `views.py`. Jangan lupa tambah *routing* URL di `urls.py`
+3. Pada proyek Flutter, *download package* `provider` dan `pbp_django_auth` dan implementasikan pada `main.dart`
+    ```
+    ···
+    @override
+    Widget build(BuildContext context) {
+      return Provider(
+        create: (_) {
+          CookieRequest request = CookieRequest();
+          return request;
+        },
+        child: MaterialApp(
+          ···
+        )
+      )
+    }
+    ```
+4. Buat `login.dart` pada folder `screens` sebagai *interface* halaman *login*. Dalam proses *login*, data berupa *username* dan *password* akan dikirim sebagai *request* ke *endpoint login* Django untuk diverifikasi kredensialnya. Flutter akan memproses *response* yang dikembalikan.
+    ```
+    final response = await request
+        .login("http://127.0.0.1:8000/auth/login/", {
+      'username': username,
+      'password': password,
+    });
+
+    if (request.loggedIn) {
+      String message = response['message'];
+      String uname = response['username'];
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyHomePage()),
+        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+                content:
+                    Text("$message Welcome, $uname.")),
+          );
+      }
+    } else {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Login Failed!'),
+            content: Text(response['message']),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    ```
+5. Buat fungsi *register* pada `authentication/views.py` dan atur *routing* URL pada `authentication/urls.py`.
+6. Buat `register.dart` pada folder `screens` sebagai *interface* halaman *register*. Dalam proses *register*, data berupa informasi akun akan dikirim sebagai *request* ke *endpoint register* Django untuk menyimpan akun baru pada *database*. Flutter akan memproses *response* yang dikembalikan.
+    ```
+    final response = await request.postJson(
+        "http://127.0.0.1:8000/auth/register/",
+        jsonEncode({
+          "username": username,
+          "password1": password1,
+          "password2": password2,
+        }));
+    if (context.mounted) {
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully registered!'),
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LoginPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to register!'),
+          ),
+        );
+      }
+    }
+    ```
+7. Buat `product_entry.dart` pada folder `models` untuk menyimpan model kustom yang sesuai dengan proyek Django.
+    ```
+    import 'dart:convert';
+
+    List<ProductEntry> productEntryFromJson(String str) => List<ProductEntry>.from(json.decode(str).map((x) => ProductEntry.fromJson(x)));
+
+    String productEntryToJson(List<ProductEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+    class ProductEntry {
+        String model;
+        String pk;
+        Fields fields;
+
+        ProductEntry({
+            required this.model,
+            required this.pk,
+            required this.fields,
+        });
+
+        factory ProductEntry.fromJson(Map<String, dynamic> json) => ProductEntry(
+            model: json["model"],
+            pk: json["pk"],
+            fields: Fields.fromJson(json["fields"]),
+        );
+
+        Map<String, dynamic> toJson() => {
+            "model": model,
+            "pk": pk,
+            "fields": fields.toJson(),
+        };
+    }
+
+    class Fields {
+        int user;
+        String name;
+        int price;
+        String description;
+        String category;
+
+        Fields({
+            required this.user,
+            required this.name,
+            required this.price,
+            required this.description,
+            required this.category,
+        });
+
+        factory Fields.fromJson(Map<String, dynamic> json) => Fields(
+            user: json["user"],
+            name: json["name"],
+            price: json["price"],
+            description: json["description"],
+            category: json["category"],
+        );
+
+        Map<String, dynamic> toJson() => {
+            "user": user,
+            "name": name,
+            "price": price,
+            "description": description,
+            "category": category,
+        };
+    }
+    ```
+8. Buat `list_products.dart` pada folder `screens` untuk menunjukkan semua produk pada *endpoint* JSON di proyek Django pada proyek Flutter. Gunakan *request* `GET` seperti berikut.
+    ```
+    ···
+    Future<List<ProductEntry>> fetchMood(CookieRequest request) async {
+      final response = await request.get('http://127.0.0.1:8000/json/');
+      
+      // Melakukan decode response menjadi bentuk json
+      var data = response;
+      
+      // Melakukan konversi data json menjadi object ProductEntry
+      List<ProductEntry> listProduct = [];
+      for (var d in data) {
+        if (d != null) {
+          listProduct.add(ProductEntry.fromJson(d));
+        }
+      }
+      return listProduct;
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      final request = context.watch<CookieRequest>();
+      ···
+    }
+    ```
+9. Buat `product_details.dart` pada folder `screens` untuk menampilkan detail setiap produk pada `list_products.dart`. Untuk menampilkan seluruh detail produk, impor `product_entry.dart` dan asosiasikan setiap *field*.
+    ```
+    import 'package:flutter/material.dart';
+    import 'package:dreamscape_mobile/models/product_entry.dart';
+
+    class ProductDetails extends StatelessWidget {
+      final Fields item;
+
+      const ProductDetails({super.key, required this.item});
+
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          ···
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Category: ${item.category}",
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Price: Rp${item.price}",
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Description: \n${item.description}",
+                  style: const TextStyle(color: Colors.white),
+                ),
+                ···
+    ```
+    Buat tombol untuk kembali ke `list_products.dart`
+    ```
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+        child: const Text(
+        'Back to Product List',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+    ```
+10. Pada `list_products.dart`, halaman detail produk bisa diakses dengan klik satu produ yang bersangkutan. Kodenya sebagai berikut.
+    ```
+    ···
+    return ListView.builder(
+      itemCount: snapshot.data!.length,
+      itemBuilder: (_, index) => GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetails(item: snapshot.data![index].fields),
+            ),
+          );
+        },
+        child: Container(
+          ···
+        )
+      )
+    )
+    ```
+11. Kode pada `list_products.dart` sudah memastikan bahwa daftar produk yang ditampilkan sudah terasosiasi dengan *user* yang sedang *login* karena adanya `CookieRequest` yang menyimpan sesi *user*.
+    ```
+    Future<List<ProductEntry>> fetchMood(CookieRequest request) async
+    ```
 
 ## Tugas Individu 8
 ### a. Kegunaan dan Keuntungan `const`
